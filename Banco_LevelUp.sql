@@ -2,67 +2,67 @@ CREATE DATABASE levelup;
 
 USE levelup;
 
-CREATE TABLE IF NOT EXISTS comsumidores(
-	id_consumidor INT NOT NULL AUTO_INCREMENT,
-    id_endereco INT NOT NULL,
-    nome VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL,
-    senha VARCHAR(100) NOT NULL,
-    PRIMARY KEY (id_consumidor)
+-- SET @@autocommit = OFF;
+-- USAR "START TRANSACTION", "ROOLBACK" E "COMMIT"
+
+CREATE TABLE IF NOT EXISTS `chaves` (
+	`cha_id` int AUTO_INCREMENT NOT NULL,
+	`jog_id` int NOT NULL,
+	`cha_chave` varchar(255) NOT NULL,
+	PRIMARY KEY (`cha_id`)
 );
 
-CREATE TABLE IF NOT EXISTS comentarios(
-	id_comentarios INT NOT NULL AUTO_INCREMENT,
-    id_game INT NOT NULL,
-    id_consumidor INT NOT NULL,
-    PRIMARY KEY (id_comentarios)
+CREATE TABLE IF NOT EXISTS `jogos` (
+	`jog_id` int AUTO_INCREMENT NOT NULL,
+	`jog_titulo` varchar(255) NOT NULL,
+	`jog_descricao` varchar(255) NOT NULL,
+	`jog_genero` varchar(255) NOT NULL,
+	`jog_plataforma` varchar(255) NOT NULL,
+	`jog_classificacao` varchar(3) NOT NULL,
+	`jog_preco` int NOT NULL,
+	PRIMARY KEY (`jog_id`)
 );
 
-CREATE TABLE IF NOT EXISTS endereco(
-	id_endereco INT NOT NULL AUTO_INCREMENT,
-    rua VARCHAR(100) NOT NULL,
-    numero VARCHAR(100) NOT NULL,
-    complemento VARCHAR(100) NOT NULL,
-    bairro VARCHAR(100) NOT NULL,
-    cep VARCHAR(100) NOT NULL,
-    PRIMARY KEY (id_endereco)
+CREATE TABLE IF NOT EXISTS `usuarios` (
+	`usu_id` int AUTO_INCREMENT NOT NULL,
+	`usu_nome` varchar(255) NOT NULL,
+	`usu_email` varchar(255) NOT NULL,
+	`usu_senha` varchar(255) NOT NULL,
+	`usu_adm` bit(1) NOT NULL,
+	PRIMARY KEY (`usu_id`)
 );
 
-CREATE TABLE IF NOT EXISTS pedidoKeys(
-	id_key INT NOT NULL AUTO_INCREMENT,
-    id_pedidos INT NOT NULL,
-    PRIMARY KEY (id_key)
+CREATE TABLE IF NOT EXISTS `pedidos` (
+	`ped_id` int AUTO_INCREMENT NOT NULL,
+	`ped_data` datetime NOT NULL,
+	`ped_preco` int NOT NULL,
+	`ped_pago` bit(1) NOT NULL,
+	`usu_id` int NOT NULL,
+	PRIMARY KEY (`ped_id`)
 );
 
-CREATE TABLE IF NOT EXISTS chaves(
-	id_key INT NOT NULL AUTO_INCREMENT,
-    id_game INT NOT NULL,
-    chave VARCHAR(255),
-    PRIMARY KEY (id_key)
+CREATE TABLE IF NOT EXISTS `comentario` (
+	`com_id` int AUTO_INCREMENT NOT NULL,
+	`jog_id` int NOT NULL,
+	`usu_id` int NOT NULL,
+	`com_comentario` varchar(255) NOT NULL,
+	`com_data` datetime NOT NULL,
+	PRIMARY KEY (`com_id`)
 );
 
-CREATE TABLE IF NOT EXISTS games(
-	id_games INT NOT NULL AUTO_INCREMENT,
-    titulo VARCHAR(100) NOT NULL,
-    descricao VARCHAR(100) NOT NULL,
-    genero VARCHAR(100) NOT NULL,
-    plataforma VARCHAR(100) NOT NULL,
-    preco VARCHAR(100) NOT NULL,
-    classificacao VARCHAR(100) NOT NULL,
-    id_usuario INT NOT NULL,
-    PRIMARY KEY (id_games)
+CREATE TABLE IF NOT EXISTS `pedido_chaves` (
+	`cha_id` int NOT NULL,
+	`ped_id` int NOT NULL,
+	PRIMARY KEY (`cha_id`)
 );
 
-CREATE TABLE IF NOT EXISTS pedidos(
-	usu_id INT NOT NULL AUTO_INCREMENT,
-    usu_name  VARCHAR(30) NOT NULL,
-    usu_ativo BIT NOT NULL,
-    PRIMARY KEY (usu_id)
-);
+ALTER TABLE `chaves` ADD CONSTRAINT `chaves_fk1` FOREIGN KEY (`jog_id`) REFERENCES `jogos`(`jog_id`);
 
-CREATE TABLE IF NOT EXISTS usuarios(
-	usu_id INT NOT NULL AUTO_INCREMENT,
-    usu_name  VARCHAR(30) NOT NULL,
-    usu_ativo BIT NOT NULL,
-    PRIMARY KEY (usu_id)
-);
+
+ALTER TABLE `pedidos` ADD CONSTRAINT `pedidos_fk4` FOREIGN KEY (`usu_id`) REFERENCES `usuarios`(`usu_id`);
+ALTER TABLE `comentario` ADD CONSTRAINT `comentario_fk1` FOREIGN KEY (`jog_id`) REFERENCES `jogos`(`jog_id`);
+
+ALTER TABLE `comentario` ADD CONSTRAINT `comentario_fk2` FOREIGN KEY (`usu_id`) REFERENCES `usuarios`(`usu_id`);
+ALTER TABLE `pedido_chaves` ADD CONSTRAINT `pedido_chaves_fk0` FOREIGN KEY (`cha_id`) REFERENCES `chaves`(`cha_id`);
+
+ALTER TABLE `pedido_chaves` ADD CONSTRAINT `pedido_chaves_fk1` FOREIGN KEY (`ped_id`) REFERENCES `pedidos`(`ped_id`);
